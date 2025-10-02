@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <img src="{{ url_for('static', filename=user.avatar_url) }}" 
+                     alt="{{ user.username }}" 
+                     class="rounded-circle mb-3" 
+                     width="150" height="150"
+                     onerror="this.src='https://via.placeholder.com/150?text={{ user.username[0]|upper }}'">
+                
+                <div class="mb-3">
+                    {% if user.online_status %}
+                        <span class="badge bg-success">
+                            <i class="bi bi-circle-fill"></i> Online
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-circle-fill"></i> Offline
+                        </span>
+                        <small class="text-muted d-block mt-1">
+                            Last seen: {{ user.last_seen.strftime('%Y-%m-%d %H:%M') }}
+                        </small>
+                    {% endif %}
+                </div>
+                
+                <h4>{{ user.full_name or user.username }}</h4>
+                <p class="text-muted">@{{ user.username }}</p>
+                
+                {% if current_user == user %}
+                    <a href="{{ url_for('main.edit_profile') }}" class="btn btn-outline-primary btn-sm">
+                        Edit Profile
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Profile Information</h5>
+            </div>
+            <div class="card-body">
+                {% if user.bio %}
+                    <div class="mb-3">
+                        <strong>Bio:</strong>
+                        <p class="mb-0">{{ user.bio }}</p>
+                    </div>
+                {% endif %}
+                
+                {% if user.location %}
+                    <div class="mb-3">
+                        <strong>Location:</strong>
+                        <p class="mb-0">{{ user.location }}</p>
+                    </div>
+                {% endif %}
+                
+                {% if user.website %}
+                    <div class="mb-3">
+                        <strong>Website:</strong>
+                        <a href="{{ user.website }}" target="_blank">{{ user.website }}</a>
+                    </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <strong>Member since:</strong>
+                    <p class="mb-0">{{ user.created_at.strftime('%B %Y') }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Posts ({{ user.posts.count() }})</h5>
+            </div>
+            <div class="card-body">
+                {% if user.posts.count() > 0 %}
+                    {% for post in user.posts.limit(5).all() %}
+                        <div class="mb-3 pb-3 border-bottom">
+                            <h6>
+                                <a href="{{ url_for('main.post_detail', post_id=post.id) }}">
+                                    {{ post.title }}
+                                </a>
+                            </h6>
+                            <small class="text-muted">{{ post.created_at.strftime('%B %d, %Y') }}</small>
+                        </div>
+                    {% endfor %}
+                    {% if user.posts.count() > 5 %}
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All Posts</a>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">No posts yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

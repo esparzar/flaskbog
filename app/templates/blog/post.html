@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <article class="card">
+            <div class="card-body">
+                <h1 class="card-title">{{ post.title }}</h1>
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <small class="text-muted">
+                            By 
+                            <a href="{{ url_for('main.user_profile', username=post.author.username) }}">
+                                {{ post.author.username }}
+                            </a>
+                            on {{ post.created_at.strftime('%B %d, %Y at %H:%M') }}
+                        </small>
+                        {% if post.updated_at != post.created_at %}
+                            <small class="text-muted ms-2">
+                                (Updated {{ post.updated_at.strftime('%B %d, %Y') }})
+                            </small>
+                        {% endif %}
+                    </div>
+                    
+                    {% if current_user == post.author %}
+                        <div>
+                            <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="post-content">
+                    {{ post.content|replace('\n', '<br>')|safe }}
+                </div>
+            </div>
+        </article>
+
+        <!-- Comments Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Comments ({{ post.comments|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if current_user.is_authenticated %}
+                    <form method="POST" class="mb-4">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form.content.label(class="form-label") }}
+                            {{ form.content(class="form-control", rows=3, placeholder="Add a comment...") }}
+                            {% if form.content.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.content.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {{ form.submit(class="btn btn-primary btn-sm") }}
+                    </form>
+                {% else %}
+                    <p class="text-muted">
+                        <a href="{{ url_for('auth.login') }}">Sign in</a> to leave a comment.
+                    </p>
+                {% endif %}
+
+                {% if post.comments %}
+                    {% for comment in post.comments %}
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>
+                                    <a href="{{ url_for('main.user_profile', username=comment.author.username) }}">
+                                        {{ comment.author.username }}
+                                    </a>
+                                </strong>
+                                <small class="text-muted">{{ comment.created_at.strftime('%b %d, %Y %H:%M') }}</small>
+                            </div>
+                            <p class="mb-0 mt-1">{{ comment.content }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No comments yet. Be the first to comment!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

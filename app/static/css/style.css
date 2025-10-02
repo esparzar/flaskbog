@@ -1,0 +1,33 @@
+/* Custom styles for Flask Blog */
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.post-content {
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.online-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.online {
+    background-color: #28a745;
+}
+
+.offline {
+    background-color: #6c757d;
+}
