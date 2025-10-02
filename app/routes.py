@@ -36,10 +36,23 @@ def create_post():
         return redirect(url_for('main.index'))
     return render_template('blog/create.html', title='Create Post', form=form)
 
-@main.route('/post/<int:post_id>')
+@main.route('/post/<int:post_id>', methods=['GET', 'POST'])
 def post_detail(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template('blog/post.html', title=post.title, post=post)
+    form = CommentForm()
+    
+    if form.validate_on_submit():
+        if not current_user.is_authenticated:
+            flash('Please log in to comment.', 'warning')
+            return redirect(url_for('auth.login'))
+        
+        comment = Comment(content=form.content.data, author=current_user, post=post)
+        db.session.add(comment)
+        db.session.commit()
+        flash('Your comment has been added!', 'success')
+        return redirect(url_for('main.post_detail', post_id=post.id))
+    
+    return render_template('blog/post.html', title=post.title, post=post, form=form)
 
 @main.route('/user/<username>')
 def user_profile(username):

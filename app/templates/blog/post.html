@@ -42,7 +42,7 @@
         <!-- Comments Section -->
         <div class="card mt-4">
             <div class="card-header">
-                <h5 class="mb-0">Comments ({{ post.comments|length }})</h5>
+                <h5 class="mb-0">Comments ({{ post.comments.count() }})</h5>
             </div>
             <div class="card-body">
                 {% if current_user.is_authenticated %}
